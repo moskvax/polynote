@@ -14,6 +14,20 @@ import {editor} from "monaco-editor";
 const vimSettings = CodeMirror.Vim;
 vimSettings.unmap("<CR>", "normal");
 
+const dvorakRemaps = [
+    ["t", "j"],
+    ["n", "k"],
+    ["s", "l"],
+    ["gn", "gk"],
+    ["gt", "gj"]
+];
+
+["normal", "visual"].forEach(mode => {
+    dvorakRemaps.forEach(([before, after]) => {
+        vimSettings.map(before, after, mode);
+    });
+});
+
 export function createVim(editor: editor.IStandaloneCodeEditor, statusLine: HTMLElement) {
     return initVimMode(editor, statusLine);
 }
