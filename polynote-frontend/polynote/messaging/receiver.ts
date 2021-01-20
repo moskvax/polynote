@@ -30,6 +30,13 @@ import {ErrorStateHandler} from "../state/error_state";
 class MessageReceiver<S> extends Disposable {
     constructor(protected socket: SocketStateHandler, protected state: StateHandler<S>) {
         super()
+
+        this.state.onDispose.then(() => {
+            this.socket.close()
+        })
+        this.socket.onDispose.then(() => {
+            if (!this.isDisposed) this.dispose()
+        })
     }
 
     receive<M extends messages.Message, C extends (new (...args: any[]) => M) & typeof messages.Message>(msgType: C, fn: (state: S, ...args: ConstructorParameters<typeof msgType>) => S | typeof NoUpdate) {

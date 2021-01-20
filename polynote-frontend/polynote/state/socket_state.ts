@@ -108,6 +108,10 @@ export class SocketStateHandler extends StateHandler<SocketState> {
             req.open("GET", url.toString());
             req.send(null);
         });
+
+        this.onDispose.then(() => {
+            this.close()
+        })
     }
 
     get socket() {
@@ -134,7 +138,7 @@ export class SocketStateHandler extends StateHandler<SocketState> {
         return this.socket.handleMessage(...args)
     }
     public close(...args: Parameters<SocketSession["close"]>): ReturnType<SocketSession["close"]> {
-        this.dispose()
+        if (!this.isDisposed) this.dispose()
         return this.socket.close(...args)
     }
 }
