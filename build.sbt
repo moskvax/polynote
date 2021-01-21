@@ -19,8 +19,9 @@ val versions = new {
 def nativeLibraryPath = s"${sys.env.get("JAVA_LIBRARY_PATH") orElse sys.env.get("LD_LIBRARY_PATH") orElse sys.env.get("DYLD_LIBRARY_PATH") getOrElse "."}:."
 
 val commonSettings = Seq(
-  scalaVersion := "2.11.12",
-  crossScalaVersions := Seq("2.11.12", "2.12.12"),
+  resolvers += Resolver.mavenLocal,
+  scalaVersion := "2.12.12",
+  crossScalaVersions := Seq("2.12.12"),
   organization := "org.polynote",
   publishMavenStyle := true,
   homepage := Some(url("https://polynote.org")),
@@ -153,12 +154,7 @@ val `polynote-server` = project.settings(
 ).dependsOn(`polynote-runtime` % "provided", `polynote-runtime` % "test", `polynote-kernel` % "compile->compile;test->test")
 
 val sparkSettings = Seq(
-  sparkVersion := {
-    scalaVersion.value match {
-      case ver if ver startsWith "2.11" => "2.1.1"
-      case ver                          => "2.4.4"  // Spark 2.4 is first version to publish for scala 2.12
-    }
-  },
+  sparkVersion := "3.1.1",
   libraryDependencies ++= Seq(
     "org.apache.spark" %% "spark-sql" % sparkVersion.value % "provided",
     "org.apache.spark" %% "spark-repl" % sparkVersion.value % "provided",

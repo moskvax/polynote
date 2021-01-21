@@ -258,13 +258,13 @@ object SparkReprsOf extends LowPrioritySparkReprsOf {
         // I assume that the schema is always the same for all elements of the array
         // (it's reasonable since this is probably a Dataframe.collect result
         val prototype = arr.head
-        val rowEncoder = RowEncoder(prototype.schema) // to go from Row to InternalRow
+        val rowSerializer = RowEncoder(prototype.schema).createSerializer() // to go from Row to InternalRow
         val (structType, encode) = structDataTypeAndEncoder(prototype.schema) // reuse code from InternalRow
         Array(
           StreamingDataRepr(
             structType,
             Some(arr.length),
-            arr.iterator.map(r => ByteBuffer.wrap(rowToBytes(structType, encode)(rowEncoder.toRow(r))))
+            arr.iterator.map(r => ByteBuffer.wrap(rowToBytes(structType, encode)(rowSerializer(r))))
           )
         )
       }
